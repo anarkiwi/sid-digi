@@ -31,6 +31,9 @@ Bit depth
 6581 vs 8580
     Galway wrote for the 6581, whose master-volume DAC offset makes ``$D418``
     writes audible without a sounding voice.  Default 6581 here.
+
+ref: XeNTaX "SID DIGI Play Routines" (Combat School driver, 125/130-cycle loop)
+    <https://c64.xentax.com/index.php/16-sid-digi-play-routines>. See README.
 """
 
 from __future__ import annotations

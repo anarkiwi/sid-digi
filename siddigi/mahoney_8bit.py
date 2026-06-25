@@ -47,6 +47,9 @@ Bit depth
 6581 vs 8580
     Both work but with different tables because the analog level set differs.
     We calibrate per chosen model so the table matches the chip being driven.
+
+ref: Pex 'Mahoney' Tufvesson, "Technical details of Musik Run/Stop" (Lund 2014)
+    <https://livet.se/mahoney/>; CSDB <https://csdb.dk/release/?id=129090>. See README.
 """
 
 from __future__ import annotations

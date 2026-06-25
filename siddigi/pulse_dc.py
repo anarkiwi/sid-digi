@@ -35,6 +35,9 @@ Players
     Used for soft "pseudo-digi" basslines and the DC-offset trick in several
     demo players; the test-bit DC primitive also underlies parts of Mahoney's
     setup.
+
+ref: C=Hacking #20 "The C64 Digi" (TEST bit + pulse-width modulation digi)
+    <http://unusedino.de/ec64/technical/c=hacking/ch20.html>. See README.
 """
 
 from __future__ import annotations

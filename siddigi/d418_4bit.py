@@ -34,6 +34,9 @@ Bit depth
 Players using this mechanism
     Rob Hubbard's game digi drums, Martin Galway drum samples, Kim Christensen
     (FutureComposer digi), the bulk of ``*Digi*`` 4-bit streamers, Voicetracker.
+
+ref: C=Hacking #20 "The C64 Digi" <http://unusedino.de/ec64/technical/c=hacking/ch20.html>;
+    codebase64 NMI Sample player; reSID filter.cc (6581/8580 DAC). See README.
 """
 
 from __future__ import annotations
