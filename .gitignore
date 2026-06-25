@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# HVSC tunes are copyright works -- never commit raw .sid binaries.
+# scripts/fetch_sids.py downloads them on demand into this gitignored cache.
+*.sid
+.sidcache/

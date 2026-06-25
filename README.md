@@ -291,10 +291,13 @@ pcm = mahoney_8bit.render(stream, "8580")                  # int16 numpy array
 
 ## Reverse-engineering artifacts
 
-`re/<player>/` holds, for each representative digi tune, the fresh `.sid`
-(copied from HVSC), a Ghidra disassembly (`disasm.asm`), decompilation
-(`decompile.c`), symbol map (`symbols.json`), a `siddump.txt` frame oracle, and
-a pure-Python register trace (`siddump_fallback.txt`). The tunes RE'd:
+`re/<player>/` holds, for each representative digi tune, a Ghidra disassembly
+(`disasm.asm`), decompilation (`decompile.c`), symbol map (`symbols.json`), a
+`siddump.txt` frame oracle, and a pure-Python register trace
+(`siddump_fallback.txt`). The raw `.sid` binaries are HVSC copyright works and
+are **not** committed; `SOURCE.txt` records each tune's HVSC path and
+`scripts/fetch_sids.py` downloads it on demand into the gitignored `.sidcache/`.
+The tunes RE'd:
 
 | Player dir | Tune | Mechanism |
 |---|---|---|
@@ -309,7 +312,14 @@ The artifacts are produced by
 [deplayroutine](https://github.com/anarkiwi/deplayroutine) (Ghidra-in-Docker),
 falling back to a pure-Python register tracer when Docker is unavailable:
 
+The tunes are first fetched from a public HVSC mirror into the gitignored
+`.sidcache/` (`scripts/fetch_sids.py`); `regen_re.py` calls the fetcher itself,
+so a fresh clone needs only network access.
+
 ```sh
+# download the RE'd tunes into .sidcache/ (done automatically by regen_re.py)
+python scripts/fetch_sids.py
+
 # full RE via deplayroutine (needs Docker + the anarkiwi/deplayroutine image)
 python scripts/regen_re.py
 
@@ -320,8 +330,8 @@ python scripts/regen_re.py --fallback
 python scripts/regen_re.py --player mahoney_8bit
 ```
 
-Override locations with env vars: `HVSC` (HVSC root), `DEPLAYROUTINE`
-(deplayroutine checkout).
+Override locations with env vars: `HVSC_MIRROR` (HVSC mirror base URL),
+`SIDCACHE` (download cache dir), `DEPLAYROUTINE` (deplayroutine checkout).
 
 > The pure-Python fallback runs the player on a [py65](https://pypi.org/project/py65/)
 > 6502 emulator and logs SID-page writes. It captures the init/setup writes and

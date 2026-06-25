@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Regenerate the RE (reverse-engineering) artifacts under ``re/<player>/``.
 
-For each representative digi tune we copy the ``.sid`` straight from HVSC, then
-drive *deplayroutine* (the Ghidra-in-Docker SID RE framework) to produce a
-disassembly, decompilation, symbol map and siddump oracle trace.  If
+For each representative digi tune we download the ``.sid`` from a public HVSC
+mirror into the gitignored ``.sidcache/`` (see ``scripts/fetch_sids.py``) -- the
+raw tunes are never committed -- then drive *deplayroutine* (the
+Ghidra-in-Docker SID RE framework) to produce a disassembly, decompilation,
+symbol map and siddump oracle trace.  If
 deplayroutine / Docker is unavailable, a pure-Python fallback (the
 ``sidtrace``-style register/siddump trace shipped here, or deplayroutine's own
 no-Docker control-flow tracer if importable) still emits a usable register
@@ -31,32 +33,24 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 RE_DIR = REPO / "re"
 
-HVSC = Path(os.environ.get("HVSC", "/scratch/hvsc/C64Music"))
-DEPLAY = Path(os.environ.get("DEPLAYROUTINE", "/scratch/anarkiwi/cbm/deplayroutine"))
+sys.path.insert(0, str(REPO))
+from scripts.fetch_sids import PLAYERS as HVSC_PATHS, fetch  # noqa: E402
 
-# player-id -> (HVSC relative path, mechanism note)
-PLAYERS = {
-    "mahoney_8bit": (
-        "MUSICIANS/M/Mahoney/Smold.sid",
-        "Mahoney 8-bit ($D418 + 3-voice DC env), 8580",
-    ),
-    "d418_4bit": (
-        "MUSICIANS/M/MC/Nemesis_the_Warlock.sid",
-        "classic 4-bit $D418 game-digi drums",
-    ),
-    "galway": (
-        "MUSICIANS/A/Alfatech/Galway-tune.sid",
-        "Galway-style 4-bit $D418 sample player",
-    ),
-    "frodigi": (
-        "MUSICIANS/K/Khugiani_Naveed/FRODIGI.sid",
-        "Frodigi oscillator-resynthesis digi, 8580",
-    ),
+DEPLAY = Path(os.environ.get("DEPLAYROUTINE", ""))
+
+# player-id -> (HVSC relative path, mechanism note).  The HVSC paths live in
+# scripts/fetch_sids.py (the download helper); we only add the mechanism note.
+_NOTES = {
+    "mahoney_8bit": "Mahoney 8-bit ($D418 + 3-voice DC env), 8580",
+    "d418_4bit": "classic 4-bit $D418 game-digi drums",
+    "galway": "Galway-style 4-bit $D418 sample player",
+    "frodigi": "Frodigi oscillator-resynthesis digi, 8580",
 }
+PLAYERS = {pid: (HVSC_PATHS[pid], _NOTES[pid]) for pid in HVSC_PATHS}
 
 
 def have_deplayroutine() -> bool:
-    if not (DEPLAY / "bin" / "deplayroutine").exists():
+    if not DEPLAY.name or not (DEPLAY / "bin" / "deplayroutine").exists():
         return False
     try:
         subprocess.run(["docker", "info"], check=True, capture_output=True, timeout=20)
@@ -123,16 +117,16 @@ def main(argv=None) -> int:
     print(f"deplayroutine available: {use_deplay}")
 
     players = {args.player: PLAYERS[args.player]} if args.player else PLAYERS
-    sys.path.insert(0, str(REPO))
 
     for player, (rel, note) in players.items():
-        sid_src = HVSC / rel
         out = RE_DIR / player
         out.mkdir(parents=True, exist_ok=True)
-        if not sid_src.exists():
-            print(f"  MISSING {sid_src}; skipping {player}")
+        try:
+            sid_src = fetch(rel)  # download to the gitignored .sidcache/
+        except Exception as exc:  # pragma: no cover - network dependent
+            print(f"  FETCH FAILED {rel} ({exc}); skipping {player}")
             continue
-        shutil.copy2(sid_src, out / sid_src.name)
+        # The raw .sid is NEVER copied into the repo tree; only RE artifacts.
         (out / "SOURCE.txt").write_text(
             f"player: {player}\nmechanism: {note}\nhvsc: {rel}\n"
             f"regenerate: python scripts/regen_re.py --player {player}\n"
