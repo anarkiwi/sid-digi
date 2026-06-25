@@ -42,6 +42,9 @@ Honesty
     This is the *most* lossy technique here: a single sawtooth per voice cannot
     reproduce arbitrary PCM.  The test asserts it tracks the dominant pitch and
     loudness envelope of a tonal input, not waveform fidelity.
+
+ref: FRODIGI by Algorithm/Algotech (Onslaught, 2014), "Free Running Oscillator
+    Digi" <https://csdb.dk/release/?id=131019>. See README.
 """
 
 from __future__ import annotations
