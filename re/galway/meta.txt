@@ -1,0 +1,7 @@
+name     'Galway-tune'
+author   'Che Lalic (Alfatech)'
+released '1991 Triad'
+load     $1000-$1AFD
+init     $1048
+play     $1021
+entries  $1021 $1048

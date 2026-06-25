@@ -1,0 +1,37 @@
+# pure-Python SID register trace (py65 fallback oracle)
+# file: /scratch/hvsc/C64Music/MUSICIANS/A/Alfatech/Galway-tune.sid
+# load=$1000 init=$1048 play=$1021 PSID
+
+# frames traced: 600
+# total SID writes: 9023  ($D418 writes: 0)
+# mean writes/frame: 15.0
+# max writes/frame:  24
+
+# DIGI INDICATOR: many $D418 (or pulse-width) writes PER FRAME means
+# the player streams PCM at a sub-frame rate -- a once-per-frame oracle
+# (siddump) would record only the LAST value each frame and miss it.
+
+# register write histogram (addr: count over all frames):
+#   $D400: 506
+#   $D401: 506
+#   $D402: 506
+#   $D403: 506
+#   $D404: 600
+#   $D405: 94
+#   $D406: 94
+#   $D407: 519
+#   $D408: 519
+#   $D409: 519
+#   $D40A: 519
+#   $D40B: 600
+#   $D40C: 81
+#   $D40D: 81
+#   $D40E: 593
+#   $D40F: 593
+#   $D410: 593
+#   $D411: 593
+#   $D412: 595
+#   $D413: 2
+#   $D414: 2
+#   $D416: 358
+#   $D417: 44

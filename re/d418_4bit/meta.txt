@@ -1,0 +1,7 @@
+name     'Nemesis the Warlock'
+author   'Marco Swagerman (MC)'
+released '1989 Dutch USA Team'
+load     $C000-$CBDF
+init     $C048
+play     $C021
+entries  $C021 $C048

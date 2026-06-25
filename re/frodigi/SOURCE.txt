@@ -1,0 +1,4 @@
+player: frodigi
+mechanism: Frodigi oscillator-resynthesis digi, 8580
+hvsc: MUSICIANS/K/Khugiani_Naveed/FRODIGI.sid
+regenerate: python scripts/regen_re.py --player frodigi
