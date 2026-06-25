@@ -1,0 +1,7 @@
+name     'FRODIGI'
+author   'Naveed Khugiani (Algorithm)'
+released '2014 Onslaught'
+load     $0800-$D003
+init     $0800
+play     $0000
+entries  $0800

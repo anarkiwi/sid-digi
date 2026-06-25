@@ -1,0 +1,37 @@
+# pure-Python SID register trace (py65 fallback oracle)
+# file: /scratch/hvsc/C64Music/MUSICIANS/M/MC/Nemesis_the_Warlock.sid
+# load=$C000 init=$C048 play=$C021 PSID
+
+# frames traced: 600
+# total SID writes: 9063  ($D418 writes: 0)
+# mean writes/frame: 15.1
+# max writes/frame:  24
+
+# DIGI INDICATOR: many $D418 (or pulse-width) writes PER FRAME means
+# the player streams PCM at a sub-frame rate -- a once-per-frame oracle
+# (siddump) would record only the LAST value each frame and miss it.
+
+# register write histogram (addr: count over all frames):
+#   $D400: 595
+#   $D401: 595
+#   $D402: 595
+#   $D403: 595
+#   $D404: 600
+#   $D405: 5
+#   $D406: 5
+#   $D407: 590
+#   $D408: 590
+#   $D409: 590
+#   $D40A: 590
+#   $D40B: 600
+#   $D40C: 10
+#   $D40D: 10
+#   $D40E: 595
+#   $D40F: 595
+#   $D410: 595
+#   $D411: 595
+#   $D412: 600
+#   $D413: 5
+#   $D414: 5
+#   $D416: 100
+#   $D417: 3

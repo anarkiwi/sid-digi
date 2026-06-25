@@ -1,0 +1,4 @@
+player: galway
+mechanism: Galway-style 4-bit $D418 sample player
+hvsc: MUSICIANS/A/Alfatech/Galway-tune.sid
+regenerate: python scripts/regen_re.py --player galway

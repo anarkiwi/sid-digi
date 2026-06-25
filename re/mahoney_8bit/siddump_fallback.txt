@@ -1,0 +1,39 @@
+# pure-Python SID register trace (py65 fallback oracle)
+# file: /scratch/hvsc/C64Music/MUSICIANS/M/Mahoney/Smold.sid
+# load=$1000 init=$1000 play=$1003 PSID
+
+# frames traced: 600
+# total SID writes: 9416  ($D418 writes: 599)
+# mean writes/frame: 15.7
+# max writes/frame:  18
+
+# DIGI INDICATOR: many $D418 (or pulse-width) writes PER FRAME means
+# the player streams PCM at a sub-frame rate -- a once-per-frame oracle
+# (siddump) would record only the LAST value each frame and miss it.
+
+# register write histogram (addr: count over all frames):
+#   $D400: 563
+#   $D401: 563
+#   $D402: 436
+#   $D403: 436
+#   $D404: 600
+#   $D405: 72
+#   $D406: 72
+#   $D407: 586
+#   $D408: 586
+#   $D409: 357
+#   $D40A: 357
+#   $D40B: 600
+#   $D40C: 26
+#   $D40D: 26
+#   $D40E: 587
+#   $D40F: 587
+#   $D410: 258
+#   $D411: 258
+#   $D412: 600
+#   $D413: 24
+#   $D414: 24
+#   $D415: 1
+#   $D416: 599
+#   $D417: 599
+#   $D418: 599

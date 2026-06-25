@@ -1,0 +1,4 @@
+player: d418_4bit
+mechanism: classic 4-bit $D418 game-digi drums
+hvsc: MUSICIANS/M/MC/Nemesis_the_Warlock.sid
+regenerate: python scripts/regen_re.py --player d418_4bit

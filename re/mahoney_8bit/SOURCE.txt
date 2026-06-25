@@ -1,0 +1,4 @@
+player: mahoney_8bit
+mechanism: Mahoney 8-bit ($D418 + 3-voice DC env), 8580
+hvsc: MUSICIANS/M/Mahoney/Smold.sid
+regenerate: python scripts/regen_re.py --player mahoney_8bit

@@ -1,0 +1,7 @@
+name     'Smold'
+author   'Pex Tufvesson (Mahoney)'
+released '2014 Mahoney'
+load     $1000-$1AEB
+init     $1000
+play     $1003
+entries  $1000 $1003 $107F $1083
