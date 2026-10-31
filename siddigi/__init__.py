@@ -1,7 +1,7 @@
 """sid-digi: first-principles C64 SID digi (PCM/sample) playback techniques.
 
 Each technique module exposes ``encode(wav_path) -> [(tick, reg, val), ...]``
-and ``render(stream, chip_model) -> int16 samples``, driving pyresidfp / reSIDfp
+and ``render(stream, chip_model) -> int16 samples``, driving pylibresidfp / libresidfp
 directly (no external playroutine binary in the playback path).
 
 See :data:`TECHNIQUES` for the registry and ``README.md`` for the mechanism

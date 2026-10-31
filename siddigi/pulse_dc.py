@@ -42,30 +42,33 @@ ref: C=Hacking #20 "The C64 Digi" (TEST bit + pulse-width modulation digi)
 
 from __future__ import annotations
 
-import datetime
 from functools import lru_cache
 from typing import List, Tuple
 
 import numpy as np
 
-from pyresidfp import WritableRegister as W
-from .sid import Event, new_sid
+from .sid import (
+    ATTACK_DECAY,
+    CONTROL,
+    Event,
+    MODE_VOL,
+    PW_HI,
+    PW_LO,
+    SUSTAIN_RELEASE,
+    dc_levels,
+)
 from .wav import load_wav_mono, resample_to, save_wav
 
 NATIVE_RATE_HZ = 11025.0
-
-PW_LO = int(W.Voice1_Pw_Lo)
-PW_HI = int(W.Voice1_Pw_Hi)
-CTRL = int(W.Voice1_Control_Reg)
 
 # Voice 1: pulse waveform (bit6) + TEST (bit3) + GATE (bit0) so the envelope
 # opens to sustain and holds the frozen DC.
 CTRL_VAL = 0x49 | 0x01  # pulse + test + gate
 PRESET: Tuple[Tuple[int, int], ...] = (
-    (int(W.Voice1_Attack_Decay), 0x00),
-    (int(W.Voice1_Sustain_Release), 0xF0),  # sustain=15
-    (int(W.Filter_Mode_Vol), 0x0F),  # full master volume, no filter
-    (CTRL, CTRL_VAL),
+    (ATTACK_DECAY, 0x00),
+    (SUSTAIN_RELEASE, 0xF0),  # sustain=15
+    (MODE_VOL, 0x0F),  # full master volume, no filter
+    (CONTROL, CTRL_VAL),
 )
 
 _PW_STEPS = 256  # candidate pulse-width values (high nibble sweep)
@@ -74,18 +77,15 @@ _PW_STEPS = 256  # candidate pulse-width values (high nibble sweep)
 @lru_cache(maxsize=4)
 def calibrate(chip_model: str = "8580") -> Tuple[np.ndarray, np.ndarray]:
     """Measure DC output vs 12-bit pulse width (sampled across its range)."""
-    sid = new_sid(chip_model, sampling_frequency=44100.0)
-    for reg, val in PRESET:
-        sid.write_register(W(reg), val)
-    sid.clock(datetime.timedelta(milliseconds=5))
-
     pws = np.linspace(0, 0x0FFF, _PW_STEPS).astype(np.int32)
-    levels = np.empty(_PW_STEPS, dtype=np.float64)
-    for i, pw in enumerate(pws):
-        sid.write_register(W.Voice1_Pw_Lo, int(pw) & 0xFF)
-        sid.write_register(W.Voice1_Pw_Hi, (int(pw) >> 8) & 0x0F)
-        samp = np.asarray(sid.clock(datetime.timedelta(milliseconds=0.5)), dtype=np.float64)
-        levels[i] = samp[len(samp) // 2 :].mean()
+    candidates = np.stack(
+        [
+            np.stack([np.full(_PW_STEPS, PW_LO), pws & 0xFF], axis=-1),
+            np.stack([np.full(_PW_STEPS, PW_HI), (pws >> 8) & 0x0F], axis=-1),
+        ],
+        axis=1,
+    )
+    levels = dc_levels(chip_model, PRESET, candidates, dwell_s=0.5e-3)
     order = np.argsort(levels, kind="stable")
     return pws[order].copy(), levels[order].copy()
 

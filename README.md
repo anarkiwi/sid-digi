@@ -3,8 +3,8 @@
 A self-contained reference for **C64 SID "digi" (PCM / sample) playback
 techniques** — how a 1982 sound chip with no sample DAC was made to play
 digitized audio — with **first-principles Python** that takes a WAV and plays it
-back through a real SID emulation ([`pyresidfp`](https://pypi.org/project/pyresidfp/)
-/ reSIDfp), reproducing each technique's mechanism. No external playroutine
+back through a real SID emulation ([`pylibresidfp`](https://pypi.org/project/pylibresidfp/)
+/ libresidfp), reproducing each technique's mechanism. No external playroutine
 binary sits in the playback path: the chip is driven one register write at a
 time, at the technique's native sub-frame rate, exactly as the C64 would.
 

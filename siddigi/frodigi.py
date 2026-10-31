@@ -53,8 +53,18 @@ from typing import List, Tuple
 
 import numpy as np
 
-from pyresidfp import WritableRegister as W
-from .sid import Event, MODE_VOL, PAL_CLOCK, render_stream
+from .sid import (
+    ATTACK_DECAY,
+    CONTROL,
+    Event,
+    FREQ_HI,
+    FREQ_LO,
+    MODE_VOL,
+    PAL_CLOCK,
+    SUSTAIN_RELEASE,
+    render_stream,
+    voice_reg,
+)
 from .wav import load_wav_mono, resample_to, save_wav
 
 FRAME_RATE_HZ = 50.0  # PAL play-call rate
@@ -62,27 +72,8 @@ NUM_VOICES = 3
 
 # Per-voice register addresses.
 _VOICE_REGS = [
-    (
-        int(W.Voice1_Freq_Lo),
-        int(W.Voice1_Freq_Hi),
-        int(W.Voice1_Control_Reg),
-        int(W.Voice1_Attack_Decay),
-        int(W.Voice1_Sustain_Release),
-    ),
-    (
-        int(W.Voice2_Freq_Lo),
-        int(W.Voice2_Freq_Hi),
-        int(W.Voice2_Control_Reg),
-        int(W.Voice2_Attack_Decay),
-        int(W.Voice2_Sustain_Release),
-    ),
-    (
-        int(W.Voice3_Freq_Lo),
-        int(W.Voice3_Freq_Hi),
-        int(W.Voice3_Control_Reg),
-        int(W.Voice3_Attack_Decay),
-        int(W.Voice3_Sustain_Release),
-    ),
+    tuple(voice_reg(v, off) for off in (FREQ_LO, FREQ_HI, CONTROL, ATTACK_DECAY, SUSTAIN_RELEASE))
+    for v in range(NUM_VOICES)
 ]
 
 SAW = 0x21  # sawtooth + gate

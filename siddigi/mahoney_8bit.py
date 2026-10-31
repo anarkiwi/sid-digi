@@ -54,32 +54,35 @@ ref: Pex 'Mahoney' Tufvesson, "Technical details of Musik Run/Stop" (Lund 2014)
 
 from __future__ import annotations
 
-import datetime
 from functools import lru_cache
 from typing import List, Tuple
 
 import numpy as np
 
-from pyresidfp import WritableRegister as W
-from .sid import Event, MODE_VOL, new_sid
+from .sid import (
+    ATTACK_DECAY,
+    CONTROL,
+    Event,
+    FC_HI,
+    FC_LO,
+    MODE_VOL,
+    RES_FILT,
+    SUSTAIN_RELEASE,
+    dc_levels,
+    voice_reg,
+)
 from .wav import load_wav_mono, resample_to, save_wav
 
 NATIVE_RATE_HZ = 32000.0  # representative high sub-frame cadence
 
 # Static setup, exactly per Mahoney's white paper (reg address, value).
 PRESET: Tuple[Tuple[int, int], ...] = (
-    (int(W.Voice1_Control_Reg), 0x49),
-    (int(W.Voice2_Control_Reg), 0x49),
-    (int(W.Voice3_Control_Reg), 0x49),
-    (int(W.Voice1_Attack_Decay), 0x0F),
-    (int(W.Voice2_Attack_Decay), 0x0F),
-    (int(W.Voice3_Attack_Decay), 0x0F),
-    (int(W.Voice1_Sustain_Release), 0xFF),
-    (int(W.Voice2_Sustain_Release), 0xFF),
-    (int(W.Voice3_Sustain_Release), 0xFF),
-    (int(W.Filter_Fc_Lo), 0xFF),
-    (int(W.Filter_Fc_Hi), 0xFF),
-    (int(W.Filter_Res_Filt), 0x03),
+    *((voice_reg(v, CONTROL), 0x49) for v in range(3)),
+    *((voice_reg(v, ATTACK_DECAY), 0x0F) for v in range(3)),
+    *((voice_reg(v, SUSTAIN_RELEASE), 0xFF) for v in range(3)),
+    (FC_LO, 0xFF),
+    (FC_HI, 0xFF),
+    (RES_FILT, 0x03),
 )
 
 
@@ -93,20 +96,9 @@ def calibrate(chip_model: str = "8580") -> Tuple[np.ndarray, np.ndarray]:
     ``writes[k]`` is a ``$D418`` byte and ``levels[k]`` its measured output,
     sorted by increasing level (monotone) for use as a translation table.
     """
-    sid = new_sid(chip_model, sampling_frequency=44100.0)
-    for reg, val in PRESET:
-        sid.write_register(W(reg), val)
-    # let the gated DC settle
-    sid.clock(datetime.timedelta(milliseconds=5))
-
     bytes_ = np.arange(256, dtype=np.int32)
-    levels = np.empty(256, dtype=np.float64)
-    for b in bytes_:
-        sid.write_register(W.Filter_Mode_Vol, int(b))
-        samp = sid.clock(datetime.timedelta(milliseconds=1.0))
-        # use the tail to skip the transient toward the new DC level
-        arr = np.asarray(samp, dtype=np.float64)
-        levels[b] = arr[len(arr) // 2 :].mean()
+    candidates = np.stack([np.full(256, MODE_VOL), bytes_], axis=-1)[:, None, :]
+    levels = dc_levels(chip_model, PRESET, candidates, dwell_s=1e-3)
 
     order = np.argsort(levels, kind="stable")
     return bytes_[order].copy(), levels[order].copy()
