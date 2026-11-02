@@ -7,7 +7,7 @@ name = "sid-digi"
 version = "0.2.0"
 description = "First-principles C64 SID digi (PCM/sample) playback techniques, driven through pylibresidfp"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 authors = [{ name = "sid-digi contributors" }]
 keywords = ["c64", "sid", "digi", "pcm", "libresidfp", "pylibresidfp", "chiptune"]
@@ -38,7 +38,7 @@ packages = ["siddigi"]
 
 [tool.black]
 line-length = 100
-target-version = ["py311"]
+target-version = ["py312"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
