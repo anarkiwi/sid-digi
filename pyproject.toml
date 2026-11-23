@@ -30,7 +30,7 @@ dev = [
 ]
 # the pure-Python RE fallback oracle needs a 6502 emulator
 re = [
-    "py65>=1.1",
+    "jennings>=0.24.0",
 ]
 
 [tool.setuptools]
