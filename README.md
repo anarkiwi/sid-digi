@@ -333,7 +333,7 @@ python scripts/regen_re.py --player mahoney_8bit
 Override locations with env vars: `HVSC_MIRROR` (HVSC mirror base URL),
 `SIDCACHE` (download cache dir), `DEPLAYROUTINE` (deplayroutine checkout).
 
-> The pure-Python fallback runs the player on a [py65](https://pypi.org/project/py65/)
+> The pure-Python fallback runs the player on a [jennings](https://pypi.org/project/jennings/)
 > 6502 emulator and logs SID-page writes. It captures the init/setup writes and
 > (for once-per-frame players) the per-frame stream, demonstrating the
 > writes-per-frame digi signature. It does **not** model CIA/NMI interrupt

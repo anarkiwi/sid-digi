@@ -3,7 +3,7 @@
 
 A standalone fallback oracle for :mod:`scripts.regen_re` when deplayroutine /
 Docker is unavailable.  It parses a PSID/RSID file, runs the player's init and
-play routines on a py65 6502 emulator, and records every write to the SID
+play routines on a jennings 6502 emulator, and records every write to the SID
 register page (``$D400-$D418``).
 
 Crucially it can dump **per play-call** (the conventional once-per-frame view,
@@ -20,8 +20,7 @@ import sys
 from collections import Counter
 from typing import List, Tuple
 
-from py65.devices.mpu6502 import MPU
-
+from jennings.devices.mpu6502 import MPU
 
 SID_BASE = 0xD400
 SID_END = 0xD41C
@@ -43,7 +42,7 @@ def parse_sid(path: str):
 
 
 class SidMachine:
-    """py65 MPU with RAM + a SID register-write log."""
+    """jennings MPU with RAM + a SID register-write log."""
 
     def __init__(self):
         self.mpu = MPU()
@@ -51,7 +50,7 @@ class SidMachine:
         self.writes: List[Tuple[int, int]] = []
         self.mpu.memory = self  # MPU indexes us like a list
 
-    # py65 memory protocol -------------------------------------------------
+    # memory protocol -------------------------------------------------
     def __getitem__(self, addr):
         if isinstance(addr, slice):
             return self.ram[addr]
@@ -99,7 +98,7 @@ def trace_sid(path: str, frames: int = 600) -> str:
     m.load(load, body)
 
     lines: List[str] = []
-    lines.append("# pure-Python SID register trace (py65 fallback oracle)")
+    lines.append("# pure-Python SID register trace (jennings fallback oracle)")
     lines.append(f"# file: {path}")
     lines.append(
         f"# load=${load:04X} init=${init:04X} play=${play:04X} {'RSID' if is_rsid else 'PSID'}"
